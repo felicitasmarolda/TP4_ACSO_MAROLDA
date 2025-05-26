@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     int **pipes;
     int i;
 
-    if (argc != 4){ printf("Uso: anillo <n> <c> <s> \n"); exit(0);}
+    if (argc != 4){ printf("Uso: anillo <n> <c> <s> \n"); exit(1);} // antes era exit(0)
     
     /* Parsing of arguments */
     n = atoi(argv[1]);      // Number of processes
@@ -37,8 +37,14 @@ int main(int argc, char **argv)
         printf("Error: El proceso inicial debe estar entre 1 y %d\n", n);
         exit(1);
     }
+      printf("Se crearán %i procesos, se enviará el caracter %i desde proceso %i \n", n, buffer[0], start);
     
-    printf("Se crearán %i procesos, se enviará el caracter %i desde proceso %i \n", n, buffer[0], start);
+    /* Special case: only one process */
+    if (n == 1) {
+        buffer[0]++;
+        printf("Resultado final: %d\n", buffer[0]);
+        return 0;
+    }
     
     /* Creating pipes for communication */
     pipes = (int **)malloc(n * sizeof(int *));
