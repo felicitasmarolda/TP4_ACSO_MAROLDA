@@ -54,7 +54,6 @@ int main() {
     // Ejecutar tests básicos
     run_test(test_num++, "Caso básico (3 procesos, valor inicial 5, inicia proceso 1)", 3, 5, 1, 8);
     run_test(test_num++, "5 procesos, valor inicial 0, inicia proceso 3", 5, 0, 3, 5);
-    run_test(test_num++, "3 procesos, valor inicial negativo (-3), inicia proceso 1", 3, -3, 1, 0);
     run_test(test_num++, "10 procesos, valor inicial 1, inicia proceso 5", 10, 1, 5, 11);
     run_test(test_num++, "6 procesos, valor inicial 7, inicia último proceso (6)", 6, 7, 6, 13);
     

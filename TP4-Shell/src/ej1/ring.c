@@ -46,6 +46,12 @@ int main(int argc, char **argv) {
         printf("Error: <n> debe ser mayor igual a 3.\n");
         exit(1);
     }
+
+    // if (c < 0) {
+    //     printf("Error: <c> debe ser un entero no negativo.\n");
+    //     exit(1);
+    // }
+
     if (s < 1 || s > n) {
         printf("Error: <s> debe estar entre 1 y %d\n", n);
         exit(1);
