@@ -51,14 +51,28 @@ int main() {
     printf("=== TESTS PARA EL ANILLO DE PROCESOS ===\n\n");
     int test_num = 1;
     
-    // Ejecutar tests
+    // Ejecutar tests básicos
     run_test(test_num++, "Caso básico (3 procesos, valor inicial 5, inicia proceso 1)", 3, 5, 1, 8);
     run_test(test_num++, "5 procesos, valor inicial 0, inicia proceso 3", 5, 0, 3, 5);
-    run_test(test_num++, "1 proceso, valor inicial 1, inicia proceso 1", 1, 1, 1, 2);
-    run_test(test_num++, "2 procesos, valor inicial 15, inicia proceso 1", 2, 15, 1, 17);
     run_test(test_num++, "3 procesos, valor inicial negativo (-3), inicia proceso 1", 3, -3, 1, 0);
     run_test(test_num++, "10 procesos, valor inicial 1, inicia proceso 5", 10, 1, 5, 11);
     run_test(test_num++, "6 procesos, valor inicial 7, inicia último proceso (6)", 6, 7, 6, 13);
+    
+    printf("=== TESTS ADICIONALES ===\n\n");
+    
+    // Tests con diferentes configuraciones
+    run_test(test_num++, "3 procesos, valor inicial 100, inicia proceso 2", 3, 100, 2, 103);
+    run_test(test_num++, "3 procesos, valor inicial 0, inicia proceso 3", 3, 0, 3, 3);
+    run_test(test_num++, "4 procesos, valor inicial 10, inicia proceso 2", 4, 10, 2, 14);
+    run_test(test_num++, "4 procesos, valor inicial 10, inicia proceso 4", 4, 10, 4, 14);
+    run_test(test_num++, "7 procesos, valor inicial 3, inicia proceso 4", 7, 3, 4, 10);
+    run_test(test_num++, "8 procesos, valor inicial -5, inicia proceso 1", 8, -5, 1, 3);
+    run_test(test_num++, "15 procesos, valor inicial 0, inicia proceso 8", 15, 0, 8, 15);
+    
+    // Tests con valores extremos
+    run_test(test_num++, "3 procesos, valor inicial -100, inicia proceso 1", 3, -100, 1, -97);
+    run_test(test_num++, "5 procesos, valor inicial 1000, inicia proceso 3", 5, 1000, 3, 1005);
+    run_test(test_num++, "20 procesos, valor inicial 1, inicia proceso 10", 20, 1, 10, 21);
     
     printf("=== TESTS DE CASOS LÍMITE ===\n\n");
     
@@ -87,6 +101,101 @@ int main() {
     pid = fork();
     if (pid == 0) {
         execl("./ring", "./ring", "0", "5", "1", NULL);
+        perror("execl failed");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        if (!WIFEXITED(status) || WEXITSTATUS(status) == 0) {
+            printf("%s✗ FAILED (debería haber fallado)%s\n", RED, NC);
+        } else {
+            printf("%s✓ PASSED (falló correctamente)%s\n", GREEN, NC);
+        }
+    }
+    printf("\n");
+    test_num++;
+
+    printf("%sTest %d: Número de procesos inválido (1)%s\n", YELLOW, test_num, NC);
+    printf("Comando: ./ring 1 5 1\n");
+    pid = fork();
+    if (pid == 0) {
+        execl("./ring", "./ring", "1", "5", "1", NULL);
+        perror("execl failed");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        if (!WIFEXITED(status) || WEXITSTATUS(status) == 0) {
+            printf("%s✗ FAILED (debería haber fallado)%s\n", RED, NC);
+        } else {
+            printf("%s✓ PASSED (falló correctamente)%s\n", GREEN, NC);
+        }
+    }
+    printf("\n");
+    test_num++;
+
+    printf("%sTest %d: Número de procesos inválido (2)%s\n", YELLOW, test_num, NC);
+    printf("Comando: ./ring 2 5 1\n");
+    pid = fork();
+    if (pid == 0) {
+        execl("./ring", "./ring", "2", "5", "1", NULL);
+        perror("execl failed");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        if (!WIFEXITED(status) || WEXITSTATUS(status) == 0) {
+            printf("%s✗ FAILED (debería haber fallado)%s\n", RED, NC);
+        } else {
+            printf("%s✓ PASSED (falló correctamente)%s\n", GREEN, NC);
+        }
+    }
+    printf("\n");
+    test_num++;
+
+    printf("%sTest %d: Proceso inicial fuera de rango (mayor que n)%s\n", YELLOW, test_num, NC);
+    printf("Comando: ./ring 5 10 6\n");
+    pid = fork();
+    if (pid == 0) {
+        execl("./ring", "./ring", "5", "10", "6", NULL);
+        perror("execl failed");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        if (!WIFEXITED(status) || WEXITSTATUS(status) == 0) {
+            printf("%s✗ FAILED (debería haber fallado)%s\n", RED, NC);
+        } else {
+            printf("%s✓ PASSED (falló correctamente)%s\n", GREEN, NC);
+        }
+    }
+    printf("\n");
+    test_num++;
+
+    printf("%sTest %d: Proceso inicial 0 (inválido)%s\n", YELLOW, test_num, NC);
+    printf("Comando: ./ring 5 10 0\n");
+    pid = fork();
+    if (pid == 0) {
+        execl("./ring", "./ring", "5", "10", "0", NULL);
+        perror("execl failed");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        if (!WIFEXITED(status) || WEXITSTATUS(status) == 0) {
+            printf("%s✗ FAILED (debería haber fallado)%s\n", RED, NC);
+        } else {
+            printf("%s✓ PASSED (falló correctamente)%s\n", GREEN, NC);
+        }
+    }
+    printf("\n");
+    test_num++;
+
+    printf("%sTest %d: Proceso inicial negativo%s\n", YELLOW, test_num, NC);
+    printf("Comando: ./ring 5 10 -1\n");
+    pid = fork();
+    if (pid == 0) {
+        execl("./ring", "./ring", "5", "10", "-1", NULL);
         perror("execl failed");
         exit(EXIT_FAILURE);
     } else if (pid > 0) {
