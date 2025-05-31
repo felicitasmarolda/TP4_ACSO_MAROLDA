@@ -35,6 +35,18 @@ char** parse_command(char* command) {
     return args;
 }
 
+char* trim_whitespace(char* str) {
+    if (!str) return str;   // si es NULL, no hacemos nada
+
+    while (*str == ' ' ||*str == '\t') str++;
+    if (*str == '\0') return str;
+
+    char* end = str + strlen(str) - 1;
+    while (end > str && (*end == ' ' ||*end == '\t')) end--;
+    *(end + 1) = '\0';
+    return str;
+}
+
 int main() {
 
     char command[256];
@@ -70,6 +82,15 @@ int main() {
 
         /* You should start programming from here... */
 
+        // Eliminamos los espacios al inicio y final de cada comando
+        for (int i = 0; i < command_count; i++) {
+            commands[i] = trim_whitespace(commands[i]);
+        }
+
+        if (command_count == 0) {
+            continue; // Si no hay comandos, volvemos al inicio del bucle
+        }
+
 
         int pipes[command_count-1][2]; // Un pipe por cada conexión entre comandos
         for (int i = 0; i < command_count-1; i++) {
@@ -78,7 +99,7 @@ int main() {
 
         for (int i = 0; i < command_count; i++) 
         {
-            printf("Command %d: %s\n", i, commands[i]);
+            // printf("Command %d: %s\n", i, commands[i]);
             pid_t pid = fork();
             if (pid == 0) {
                 // Código del proceso hijo
@@ -89,7 +110,7 @@ int main() {
                         perror("dup2 failed");
                         exit(EXIT_FAILURE);
                     }
-                    dup2(pipes[i-1][0], STDIN_FILENO); // Redirigir stdin al pipe anterior
+                    // dup2(pipes[i-1][0], STDIN_FILENO); // Redirigir stdin al pipe anterior
                 }
                 // Si no es el último: redirigir stdout hacia el pipe siguiente
                 if (i < command_count - 1) {
@@ -113,7 +134,7 @@ int main() {
                 strncpy(cmd_copy, commands[i], sizeof(cmd_copy) - 1);
                 cmd_copy[sizeof(cmd_copy) - 1] = '\0';
 
-                char **args = parse_command(commands[i]);
+                char **args = parse_command(cmd_copy);
 
                 if (args == NULL) {
                     fprintf(stderr, "Error parsing command\n");
@@ -137,7 +158,6 @@ int main() {
         for (int i = 0; i < command_count; i++){
             wait(NULL);
         }
-
 
     }
     return 0;

@@ -1,3 +1,20 @@
+# CC = gcc
+# CFLAGS = -Wall -Wextra -std=c11
+
+# TARGET = shell
+# SRC = shell.c
+
+# all: $(TARGET)
+
+# $(TARGET): $(SRC)
+# 	$(CC) $(CFLAGS) -o $@ $^
+
+# clean:
+# 	rm -f $(TARGET)
+
+# Makefile para TP4 Shell
+
+# Makefile para TP4 Shell
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
 
@@ -11,5 +28,9 @@ $(TARGET): $(SRC)
 
 clean:
 	rm -f $(TARGET)
+	rm -rf test_files test_dir
 
-Makefile para TP4 Shell
+# Tests automáticos
+test: $(TARGET)
+	chmod +x test_shell.sh
+	./test_shell.sh
