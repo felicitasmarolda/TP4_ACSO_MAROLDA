@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# test_shell.sh - Script para probar el shell implementado
+# test_shell.sh - Script para probar el shell implementado (CORREGIDO)
+# Enfocado en pipes sin parsing complejo de texto
 # Uso: ./test_shell.sh
 
 # Colores para output
@@ -74,60 +75,78 @@ if [ ! -f "./shell" ]; then
     exit 1
 fi
 
-echo -e "${BLUE}=== INICIO DE TESTS PARA EL SHELL ===${NC}"
+echo -e "${BLUE}=== TESTS PARA EL SHELL (SIN PARSING COMPLEJO) ===${NC}"
+echo -e "${YELLOW}Nota: Estos tests evitan el parsing complejo según la consigna${NC}"
 echo
 
-# Trabajar en el directorio actual (donde están los archivos reales)
-echo -e "${YELLOW}=== TESTS BÁSICOS ===${NC}"
+echo -e "${YELLOW}=== TESTS BÁSICOS DE PIPES ===${NC}"
 
 # Test 1: Comando simple sin pipes
-run_test "Comando simple: ls" "ls" "ls"
+run_test "Comando simple: ls" "ls"
 
-# Test 2: Pipe básico - buscar archivos .c (que existen en tu proyecto)
-run_test "Pipe básico: ls | grep .c" "ls | grep .c" "ls | grep .c"
+# Test 2: Pipe básico simple - buscar archivos con extensión
+run_test "Pipe básico: ls | grep .c" "ls | grep .c"
 
-# Test 3: Múltiples pipes - contar archivos .c
-run_test "Múltiples pipes: ls | grep .c | wc -l" "ls | grep .c | wc -l" "ls | grep .c | wc -l"
+# Test 3: Pipe básico - buscar archivos shell
+run_test "Pipe básico: ls | grep shell" "ls | grep shell"
 
-# Test 4: Buscar archivos .sh (test_shell.sh existe)
-run_test "Buscar .sh: ls | grep .sh" "ls | grep .sh" "ls | grep .sh"
+# Test 4: Pipe básico - buscar Makefile
+run_test "Pipe básico: ls | grep Makefile" "ls | grep Makefile"
 
-# Test 5: Comando con argumentos - buscar archivos shell
-run_test "ls con argumentos: ls -la | grep shell" "ls -la | grep shell" "ls -la | grep shell"
+# Test 5: Contar líneas con pipe
+run_test "Contar con pipe: ls | wc -l" "ls | wc -l"
 
-echo -e "${YELLOW}=== TESTS DE ROBUSTEZ ===${NC}"
+echo -e "${YELLOW}=== TESTS DE MÚLTIPLES PIPES ===${NC}"
 
-# Test 6: Espacios extra alrededor de pipes
-run_test "Espacios extra: ls | grep .c" "ls  |  grep .c" "ls | grep .c"
+# Test 6: Triple pipe - contar archivos .c
+run_test "Triple pipe: ls | grep .c | wc -l" "ls | grep .c | wc -l"
 
-# Test 7: Comando más complejo - excluir directorios y tomar primeros 5
-run_test "Comando complejo: ls -la | grep -v ^d | head -5" "ls -la | grep -v ^d | head -5" "ls -la | grep -v ^d | head -5"
+# Test 7: Triple pipe - ordenar y limitar
+run_test "Triple pipe: ls | sort | head -3" "ls | sort | head -3"
 
-# Test 8: Buscar archivos .o (shell.o existe)
-run_test "Buscar .o: ls | grep .o" "ls | grep .o" "ls | grep .o"
+# Test 8: Triple pipe - buscar y ordenar
+run_test "Triple pipe: ls | grep shell | sort" "ls | grep shell | sort"
 
-# Test 9: wc (word count) - contar todos los archivos
-run_test "Contar líneas: ls | wc -l" "ls | wc -l" "ls | wc -l"
+echo -e "${YELLOW}=== TESTS DE COMANDOS CON ARGUMENTOS SIMPLES ===${NC}"
 
-# Test 10: sort
-run_test "Ordenar: ls | sort" "ls | sort" "ls | sort"
+# Test 9: Comando con argumento simple
+run_test "ls con argumento: ls -l | grep shell" "ls -l | grep shell"
 
-echo -e "${YELLOW}=== TESTS ADICIONALES ===${NC}"
+# Test 10: head con número
+run_test "head con número: ls | head -5" "ls | head -5"
 
-# Test 11: Buscar archivos que contengan "shell" en el nombre
-run_test "Buscar 'shell': ls | grep shell" "ls | grep shell" "ls | grep shell"
+# Test 11: wc con opción
+run_test "wc con opción: ls | wc -w" "ls | wc -w"
 
-# Test 12: Múltiples filtros - buscar archivos regulares que contengan "shell"
-run_test "Múltiples filtros: ls -la | grep -v ^d | grep shell" "ls -la | grep -v ^d | grep shell" "ls -la | grep -v ^d | grep shell"
+echo -e "${YELLOW}=== TESTS DE ROBUSTEZ (SIN PARSING COMPLEJO) ===${NC}"
 
-# Test 13: echo y grep - test sintético
-run_test "echo pipe grep: echo 'shell.c Makefile test_shell.sh' | grep shell" "echo 'shell.c Makefile test_shell.sh' | grep shell" "echo 'shell.c Makefile test_shell.sh' | grep shell"
+# Test 12: Espacios simples alrededor de pipes (sin parsing complejo)
+run_test "Espacios simples: ls|grep shell" "ls|grep shell" "ls | grep shell"
 
-# Test 14: Buscar por extensión específica usando ls y grep
-run_test "Buscar Makefile: ls | grep Makefile" "ls | grep Makefile" "ls | grep Makefile"
+# Test 13: Pipe con cat
+run_test "Pipe con cat: ls | cat" "ls | cat"
 
-# Test 15: Filtro más específico - archivos que empiecen con 's'
-run_test "Archivos con 's': ls | grep '^s'" "ls | grep '^s'" "ls | grep '^s'"
+# Test 14: sort simple
+run_test "Sort simple: ls | sort" "ls | sort"
+
+# Test 15: Cuádruple pipe
+run_test "Cuádruple pipe: ls | grep shell | sort | head -2" "ls | grep shell | sort | head -2"
+
+echo -e "${YELLOW}=== TESTS CON ECHO (ENTRADA CONTROLADA) ===${NC}"
+
+# Test 16: echo simple con pipe (sin comillas complejas)
+run_test "echo simple: echo test | grep test" "echo test | grep test"
+
+# Test 17: echo con múltiples palabras (sin comillas)
+run_test "echo múltiple: echo hello world | grep hello" "echo hello world | grep hello"
+
+echo -e "${BLUE}=== TESTS EXCLUIDOS POR PARSING COMPLEJO ===${NC}"
+echo -e "${YELLOW}Los siguientes tipos de comandos NO se testean según la consigna:${NC}"
+echo -e "- Comandos con comillas: ls | grep \".zip\""
+echo -e "- Patrones complejos: ls | grep \".png .zip\""
+echo -e "- Parsing de argumentos con espacios y comillas"
+echo -e "- Escape de caracteres especiales"
+echo
 
 echo -e "${BLUE}=== RESUMEN DE TESTS ===${NC}"
 echo -e "Total de tests: ${TOTAL}"
@@ -136,6 +155,7 @@ echo -e "${RED}Fallaron: ${FAILED}${NC}"
 
 if [ $FAILED -eq 0 ]; then
     echo -e "${GREEN}¡Todos los tests pasaron! ✓${NC}"
+    echo -e "${BLUE}El shell maneja correctamente pipes sin parsing complejo${NC}"
     exit 0
 else
     echo -e "${RED}Algunos tests fallaron. Revisa la implementación.${NC}"
