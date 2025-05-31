@@ -1,49 +1,15 @@
-# CC = gcc
-# CFLAGS = -Wall -Wextra -std=c11
-
-# TARGET = shell
-# SRC = shell.c
-
-# all: $(TARGET)
-
-# $(TARGET): $(SRC)
-# 	$(CC) $(CFLAGS) -o $@ $^
-
-# clean:
-# 	rm -f $(TARGET)
-
-# Makefile para TP4 Shell
-
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -std=c11
+
 TARGET = shell
-TESTS = test_simple test_pipes test_quotes
+SRC = shell.c
 
-all: $(TARGET) $(TESTS)
+all: $(TARGET)
 
-$(TARGET): shell.c
+$(TARGET): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^
-
-test_simple: test_simple.c
-	$(CC) $(CFLAGS) -o $@ $^
-
-test_pipes: test_pipes.c
-	$(CC) $(CFLAGS) -o $@ $^
-
-test_quotes: test_quotes.c
-	$(CC) $(CFLAGS) -o $@ $^
-
-test: all
-	@echo "\n=== Running simple command test ==="
-	./test_simple
-	@echo "\n=== Running pipe command test ==="
-	./test_pipes
-	@echo "\n=== Running quoted arguments test (extra credit) ==="
-	./test_quotes
 
 clean:
-	rm -f $(TARGET) $(TESTS) *.o
+	rm -f $(TARGET)
 
-.PHONY: all test clean
-
-# make file cambiado faltan los tests de deepseek
+Makefile para TP4 Shell
