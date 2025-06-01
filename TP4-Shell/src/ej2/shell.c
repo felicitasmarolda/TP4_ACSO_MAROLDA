@@ -14,21 +14,50 @@ char** parse_command(char* command) {
     }
 
     int arg_count = 0;
+    char* ptr = command;
     
-    char* token = strtok(command, " \t\n");
-
-    while (token != NULL) {
+    while (*ptr != '\0') {
+        // Saltar espacios y tabs
+        while (*ptr == ' ' || *ptr == '\t') ptr++;
+        if (*ptr == '\0') break;
+        
         if (arg_count >= 64) {
             fprintf(stderr, "Too many arguments\n");
             free(args);
             exit(EXIT_FAILURE);
         }
-
-        args[arg_count++] = token;
-        token = strtok(NULL, " \t\n");
+        
+        char* start = ptr;
+        
+        // empieza con ""
+        if (*ptr == '"') {
+            ptr++;
+            start = ptr;
+            
+            while (*ptr != '\0' && *ptr != '"') {
+                ptr++;
+            }
+            
+            if (*ptr == '"') {
+                *ptr = '\0';
+                ptr++;
+            }
+        } else {
+            // sin comillas
+            while (*ptr != '\0' && *ptr != ' ' && *ptr != '\t') {
+                ptr++;
+            }
+            
+            if (*ptr != '\0') {
+                *ptr = '\0';
+                ptr++;
+            }
+        }
+        
+        args[arg_count++] = start;
     }
-    args[arg_count] = NULL;
     
+    args[arg_count] = NULL;
     return args;
 }
 
@@ -47,14 +76,18 @@ char* trim_whitespace(char* str) {
 int main() {
     char command[256];
     char *commands[MAX_COMMANDS];
-    int command_count = 0;    while (1) {
+    int command_count = 0;
+    
+    while (1) {
         if (isatty(STDIN_FILENO)) {
             printf("Shell> ");
         }
         command_count = 0;
         
         if (fgets(command, sizeof(command), stdin) == NULL) {
-            printf("\n");
+            if (isatty(STDIN_FILENO)) {
+                printf("\n");
+            }
             break;
         }
         command[strcspn(command, "\n")] = '\0';
@@ -71,7 +104,9 @@ int main() {
 
         if (command_count == 0 || strlen(commands[0]) == 0) {
             continue;
-        }        if (strcmp(commands[0], "exit") == 0) {
+        }
+        
+        if (command_count == 1 && strcmp(commands[0], "exit") == 0){
             if (isatty(STDIN_FILENO)) {
                 printf("Goodbye!\n");
             }
@@ -80,6 +115,7 @@ int main() {
 
         // un solo comando
         if (command_count == 1) {
+            
             pid_t pid = fork();
             if (pid < 0) {
                 perror("fork failed");
