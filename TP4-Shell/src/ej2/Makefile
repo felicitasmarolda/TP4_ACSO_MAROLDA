@@ -32,8 +32,6 @@ clean:
 
 # Tests automáticos
 test: $(TARGET)
-	# chmod +x test_shell.sh
-	# ./test_shell.sh
-	chmod +x tester.sh
-	./tester.sh
+	chmod +x test_shell.sh
+	./test_shell.sh
 	
